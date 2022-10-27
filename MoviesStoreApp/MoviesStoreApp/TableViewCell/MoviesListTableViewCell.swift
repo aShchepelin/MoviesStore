@@ -1,5 +1,5 @@
 //
-//  MovieTableViewCell.swift
+//  MoviesListTableViewCell.swift
 //  MoviesStoreApp
 //
 //  Created by Александр Андреевич Щепелин on 24.10.2022.
@@ -8,7 +8,7 @@
 import UIKit
 
 /// Ячейка с инфой о фильме
-final class MovieTableViewCell: UITableViewCell {
+final class MoviesListTableViewCell: UITableViewCell {
     // MARK: - Visual Components
 
     private let posterImageView: UIImageView = {
@@ -24,16 +24,7 @@ final class MovieTableViewCell: UITableViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
-        label.font = .boldSystemFont(ofSize: 15)
-        return label
-    }()
-
-    private let overviewLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 13)
-        label.lineBreakMode = .byWordWrapping
-        label.numberOfLines = 0
+        label.font = .boldSystemFont(ofSize: 17)
         return label
     }()
 
@@ -67,30 +58,28 @@ final class MovieTableViewCell: UITableViewCell {
 
     // MARK: - LifeCycle
 
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        setupPosterImageView()
-        setupTitleLabel()
-        setupOriginalTitleLabel()
-        setupVoteAverageLabel()
+        setupUI()
     }
 
     // MARK: - Public Methods
 
     func refreshData(_ model: Movies) {
         titleLabel.text = model.title
-        overviewLabel.text = model.overview
-//        posterImageView.image = UIImage(named: "testPicture")
-        posterImageView.downloaded(from: "https://image.tmdb.org/t/p/w500/kqjL17yufvn9OVLyXYpvtyrFfak.jpg")
+        posterImageView.loadFrom(URLAddress: "https://image.tmdb.org/t/p/w500\(model.poster)")
         voteAverage.text = "\(model.voteAverage)"
         originalTitleLabel.text = "\(model.originalTitle), \(model.releaseDate)"
     }
 
     // MARK: - Private Methods
+
+    private func setupUI() {
+        setupPosterImageView()
+        setupTitleLabel()
+        setupOriginalTitleLabel()
+        setupVoteAverageLabel()
+    }
 
     private func setupPosterImageView() {
         addSubview(posterImageView)
@@ -105,13 +94,13 @@ final class MovieTableViewCell: UITableViewCell {
         addSubview(titleLabel)
         titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: -0).isActive = true
         titleLabel.widthAnchor.constraint(equalToConstant: 250).isActive = true
-        titleLabel.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        titleLabel.heightAnchor.constraint(equalToConstant: 70).isActive = true
         titleLabel.leadingAnchor.constraint(equalTo: posterImageView.trailingAnchor, constant: 10).isActive = true
     }
 
     private func setupOriginalTitleLabel() {
         addSubview(originalTitleLabel)
-        originalTitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: -18).isActive = true
+        originalTitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: -15).isActive = true
         originalTitleLabel.leadingAnchor.constraint(equalTo: posterImageView.trailingAnchor,
                                                     constant: 10).isActive = true
         originalTitleLabel.widthAnchor.constraint(equalToConstant: 250).isActive = true
