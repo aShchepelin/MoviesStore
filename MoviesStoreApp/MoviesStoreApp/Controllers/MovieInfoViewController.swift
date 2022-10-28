@@ -5,13 +5,19 @@
 //  Created by Александр Андреевич Щепелин on 26.10.2022.
 //
 
+import SafariServices
 import UIKit
 
 /// Экран с описанием фильма
 final class MovieInfoViewController: UIViewController {
-    // MARK: - Visual Components
+    // MARK: - Private Visual Components
 
     private let movieInfoTableView = UITableView()
+
+    // MARK: - Public Properties
+
+    var movieInfo: MovieInfo?
+    var movieID: Int?
 
     // MARK: - LifeCycle
 
@@ -20,11 +26,6 @@ final class MovieInfoViewController: UIViewController {
         setupUI()
     }
 
-    // MARK: - Public Properties
-
-    var movieInfo: MovieInfo?
-    var movieID: Int?
-
     // MARK: - Private Methods
 
     private func setupUI() {
@@ -32,10 +33,11 @@ final class MovieInfoViewController: UIViewController {
         movieInfoTableView.delegate = self
         movieInfoTableView.dataSource = self
         moviesCollection()
+        setupConstraints()
     }
 
     private func moviesCollection() {
-        guard let url = URL(string: "\(Constants.baseURL + "\(movieID ?? 0)" + Constants.apiKey)")
+        guard let url = URL(string: "\(URLRequest.baseURL + "\(movieID ?? 0)" + URLRequest.apiKey)")
         else { return }
         URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
             guard let data = data else { return }
@@ -45,7 +47,7 @@ final class MovieInfoViewController: UIViewController {
                     self?.movieInfoTableView.reloadData()
                 }
             } catch {
-                print("Error", error)
+                print(error)
             }
         }.resume()
     }
@@ -55,10 +57,16 @@ final class MovieInfoViewController: UIViewController {
         movieInfoTableView.register(MovieInfoTableViewCell.self,
                                     forCellReuseIdentifier: Identifier.movieInfoCellIdentifier)
         movieInfoTableView.translatesAutoresizingMaskIntoConstraints = false
-        movieInfoTableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        movieInfoTableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        movieInfoTableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        movieInfoTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        movieInfoTableView.allowsSelection = false
+    }
+
+    private func setupConstraints() {
+        NSLayoutConstraint.activate([
+            movieInfoTableView.topAnchor.constraint(equalTo: view.topAnchor),
+            movieInfoTableView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            movieInfoTableView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            movieInfoTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
     }
 }
 
@@ -72,9 +80,24 @@ extension MovieInfoViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: Identifier.movieInfoCellIdentifier,
                                                        for: indexPath) as? MovieInfoTableViewCell
+
         else { return UITableViewCell() }
         guard let model = movieInfo else { return UITableViewCell() }
         cell.refreshData(model)
+        cell.delegate = self
         return cell
+    }
+}
+
+extension MovieInfoViewController: ShowSafaryDelegate {
+    func showMovieInfo() {
+        guard let model = movieInfo else { return }
+        let imdbLink = "\(URLRequest.baseImdbURL)\(model.imdbId)\(URLRequest.imdbTrailerURL)"
+        if let url = URL(string: imdbLink) {
+            let config = SFSafariViewController.Configuration()
+            config.entersReaderIfAvailable = true
+            let vc = SFSafariViewController(url: url, configuration: config)
+            present(vc, animated: true)
+        }
     }
 }

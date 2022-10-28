@@ -5,8 +5,6 @@
 //  Created by Александр Андреевич Щепелин on 24.10.2022.
 //
 
-import Foundation
-
 /// Структура для парсинга результата
 struct Results: Codable {
     let results: [Movies]
@@ -50,13 +48,16 @@ struct MovieInfo: Codable {
     let originalTitle: String
     let overview: String
     let releaseDate: String
-    //   let genre: [Int]
+    let genres: [Genre]
     let movieId: Int
     let title: String
     let popularity: Float
     let voteCount: Int
     let video: Bool
     let voteAverage: Float
+    let productionCountries: [ProductionCountry]
+    let runtime: Int
+    let imdbId: String
 
     enum CodingKeys: String, CodingKey {
         case poster = "poster_path"
@@ -64,12 +65,29 @@ struct MovieInfo: Codable {
         case originalTitle = "original_title"
         case overview
         case releaseDate = "release_date"
-//        case genre = "genre_ids"
+        case genres
         case movieId = "id"
         case title
         case popularity
         case voteCount = "vote_count"
         case video
         case voteAverage = "vote_average"
+        case productionCountries = "production_countries"
+        case runtime
+        case imdbId = "imdb_id"
+    }
+}
+
+/// Жанры
+struct Genre: Codable {
+    let name: String
+}
+
+/// Страна
+struct ProductionCountry: Codable {
+    let name: String
+
+    enum CodingKeys: String, CodingKey {
+        case name
     }
 }

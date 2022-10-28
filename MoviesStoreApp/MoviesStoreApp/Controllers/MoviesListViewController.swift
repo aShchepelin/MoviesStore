@@ -1,14 +1,15 @@
 //
-//  ViewController.swift
+//  MoviesListViewController.swift
 //  MoviesStoreApp
 //
 //  Created by Александр Андреевич Щепелин on 24.10.2022.
 //
 
 import UIKit
-/// Стартовый экран приложения
+
+/// Экран списка фильмов
 final class MoviesListViewController: UIViewController {
-    // MARK: - Visual Components
+    // MARK: - Private Visual Components
 
     private let moviesListTableView = UITableView()
 
@@ -34,53 +35,60 @@ final class MoviesListViewController: UIViewController {
 
     // MARK: - Private methods
 
-    private func setupUI() {
-        moviesCollection(url: Constants.popularURL)
-        view.addSubview(moviesListTableView)
-        addSegmentControl()
-        setupTableView()
-        moviesListTableView.delegate = self
-        moviesListTableView.dataSource = self
-    }
-
-    private func addSegmentControl() {
-        let segmentItems = Constants.moviesCompilation
-        moviesCompilationSegmentControl = UISegmentedControl(items: segmentItems)
-        view.addSubview(moviesCompilationSegmentControl)
-        moviesCompilationSegmentControl.translatesAutoresizingMaskIntoConstraints = false
-        moviesCompilationSegmentControl.topAnchor.constraint(
-            equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        moviesCompilationSegmentControl.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        moviesCompilationSegmentControl.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        moviesCompilationSegmentControl.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        moviesCompilationSegmentControl.widthAnchor.constraint(equalToConstant: 250).isActive = true
-        moviesCompilationSegmentControl.addTarget(self, action: #selector(segmentControlAction(_:)), for: .valueChanged)
-        moviesCompilationSegmentControl.selectedSegmentIndex = 1
-    }
-
-    @objc func segmentControlAction(_ segmentedControl: UISegmentedControl) {
+    @objc private func segmentControlAction(_ segmentedControl: UISegmentedControl) {
         switch segmentedControl.selectedSegmentIndex {
         case 0:
-            moviesCollection(url: Constants.topRatedURL)
+            moviesCollection(url: URLRequest.baseURL + URLRequest.topRatedRequest + URLRequest.apiKey)
         case 1:
-            moviesCollection(url: Constants.popularURL)
+            moviesCollection(url: URLRequest.baseURL + URLRequest.popularRequest + URLRequest.apiKey)
         case 2:
-            moviesCollection(url: Constants.upcomingURL)
+            moviesCollection(url: URLRequest.baseURL + URLRequest.upcomingRequest + URLRequest.apiKey)
         default:
             break
         }
     }
 
+    private func setupUI() {
+        moviesCollection(url: URLRequest.baseURL + URLRequest.popularRequest + URLRequest.apiKey)
+        addSegmentControl()
+        setupTableView()
+        setupConstraints()
+        moviesListTableView.delegate = self
+        moviesListTableView.dataSource = self
+    }
+
+    private func addSegmentControl() {
+        let segmentItems = URLRequest.moviesCompilation
+        moviesCompilationSegmentControl = UISegmentedControl(items: segmentItems)
+        view.addSubview(moviesCompilationSegmentControl)
+        moviesCompilationSegmentControl.translatesAutoresizingMaskIntoConstraints = false
+        moviesCompilationSegmentControl.addTarget(self, action: #selector(segmentControlAction(_:)), for: .valueChanged)
+        moviesCompilationSegmentControl.selectedSegmentIndex = 1
+    }
+
     private func setupTableView() {
+        view.addSubview(moviesListTableView)
         moviesListTableView.register(MoviesListTableViewCell.self,
                                      forCellReuseIdentifier: Identifier.moviesListCellIdentifier)
         moviesListTableView.translatesAutoresizingMaskIntoConstraints = false
-        moviesListTableView.topAnchor.constraint(
-            equalTo: moviesCompilationSegmentControl.bottomAnchor, constant: 10
-        ).isActive = true
-        moviesListTableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        moviesListTableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        moviesListTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+    }
+
+    private func setupConstraints() {
+        NSLayoutConstraint.activate([
+            moviesListTableView.topAnchor.constraint(
+                equalTo: moviesCompilationSegmentControl.bottomAnchor, constant: 10
+            ),
+            moviesListTableView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            moviesListTableView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            moviesListTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
+            moviesCompilationSegmentControl.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor),
+            moviesCompilationSegmentControl.leftAnchor.constraint(equalTo: view.leftAnchor),
+            moviesCompilationSegmentControl.rightAnchor.constraint(equalTo: view.rightAnchor),
+            moviesCompilationSegmentControl.heightAnchor.constraint(equalToConstant: 50),
+            moviesCompilationSegmentControl.widthAnchor.constraint(equalToConstant: 250),
+        ])
     }
 
     private func moviesCollection(url: String) {
@@ -93,7 +101,7 @@ final class MoviesListViewController: UIViewController {
                     self?.moviesListTableView.reloadData()
                 }
             } catch {
-                print("Error", error)
+                print(error)
             }
         }.resume()
     }
