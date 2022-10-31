@@ -19,7 +19,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.windowScene = applicationScene
         window?.makeKeyAndVisible()
 
-        let startViewController = ViewController()
+        let startViewController = MoviesListViewController()
         let navigationController = UINavigationController(rootViewController: startViewController)
         window?.rootViewController = navigationController
     }
