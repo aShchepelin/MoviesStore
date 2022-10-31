@@ -2,12 +2,14 @@
 //  Movies.swift
 //  MoviesStoreApp
 //
-//  Created by Александр Андреевич Щепелин on 24.10.2022.
-//
 
 /// Структура для парсинга результата
 struct Results: Codable {
-    let results: [Movies]
+    let movies: [Movies]
+
+    enum CodingKeys: String, CodingKey {
+        case movies = "results"
+    }
 }
 
 /// Модель фильмов

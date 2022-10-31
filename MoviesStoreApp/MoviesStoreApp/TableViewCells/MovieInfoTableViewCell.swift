@@ -2,8 +2,6 @@
 //  MovieInfoTableViewCell.swift
 //  MoviesStoreApp
 //
-//  Created by Александр Андреевич Щепелин on 26.10.2022.
-//
 
 import SafariServices
 import UIKit
@@ -120,7 +118,7 @@ final class MovieInfoTableViewCell: UITableViewCell {
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
-        fatalError()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Public Methods
@@ -129,16 +127,16 @@ final class MovieInfoTableViewCell: UITableViewCell {
         var genres = ""
         var countries = ""
         for item in model.genres {
-            genres += " " + item.name
+            genres += " \(item.name)"
         }
 
         for item in model.productionCountries {
-            countries += " " + item.name
+            countries += " \(item.name)"
         }
         let year = model.releaseDate.components(separatedBy: "-")
         titleLabel.text = model.title
         posterImageView.loadFrom(URLAddress: "\(URLRequest.imageURL)\(model.poster)")
-        yearAndGenresLabel.text = "\(year[0]) \(genres)"
+        yearAndGenresLabel.text = "\(year.first ?? "") \(genres)"
         originalTitleLabel.text = "\(model.originalTitle)"
         countryAndRuntimeLabel.text = "\(countries), \((model.runtime) / 60) " +
             "\(Constants.hoursText) \((model.runtime) % 60) \(Constants.minutesText)"

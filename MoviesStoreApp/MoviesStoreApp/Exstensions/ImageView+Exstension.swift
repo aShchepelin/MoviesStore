@@ -2,8 +2,6 @@
 //  ImageView+Exstension.swift
 //  MoviesStoreApp
 //
-//  Created by Александр Андреевич Щепелин on 25.10.2022.
-//
 
 import UIKit
 
@@ -15,9 +13,9 @@ extension UIImageView {
         }
         DispatchQueue.global().async {
             if let imageData = try? Data(contentsOf: url) {
-                DispatchQueue.main.async { [weak self] in
+                DispatchQueue.main.async {
                     if let loadedImage = UIImage(data: imageData) {
-                        self?.image = loadedImage
+                        self.image = loadedImage
                     }
                 }
             }

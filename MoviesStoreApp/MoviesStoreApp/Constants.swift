@@ -2,8 +2,6 @@
 //  Constants.swift
 //  MoviesStoreApp
 //
-//  Created by Александр Андреевич Щепелин on 25.10.2022.
-//
 
 /// Идентификаторы
 enum Identifier {

@@ -2,8 +2,6 @@
 //  MoviesListTableViewCell.swift
 //  MoviesStoreApp
 //
-//  Created by Александр Андреевич Щепелин on 24.10.2022.
-//
 
 import UIKit
 
@@ -59,7 +57,7 @@ final class MoviesListTableViewCell: UITableViewCell {
 
     func refreshData(_ model: Movies) {
         titleLabel.text = model.title
-        posterImageView.loadFrom(URLAddress: URLRequest.imageURL + "\(model.poster)")
+        posterImageView.loadFrom(URLAddress: "\(URLRequest.imageURL) \(model.poster)")
         voteAverageLabel.text = "\(model.voteAverage)"
         originalTitleLabel.text = "\(model.originalTitle), \(model.releaseDate)"
 

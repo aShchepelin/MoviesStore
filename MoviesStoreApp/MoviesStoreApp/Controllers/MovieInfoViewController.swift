@@ -2,7 +2,6 @@
 //  MovieInfoViewController.swift
 //  MoviesStoreApp
 //
-//  Created by Александр Андреевич Щепелин on 26.10.2022.
 //
 
 import SafariServices
@@ -37,14 +36,14 @@ final class MovieInfoViewController: UIViewController {
     }
 
     private func moviesCollection() {
-        guard let url = URL(string: "\(URLRequest.baseURL + "\(movieID ?? 0)" + URLRequest.apiKey)")
+        guard let url = URL(string: "\(URLRequest.baseURL) \(movieID ?? 0) \(URLRequest.apiKey)")
         else { return }
-        URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
+        URLSession.shared.dataTask(with: url) { data, _, error in
             guard let data = data else { return }
             do {
-                self?.movieInfo = try JSONDecoder().decode(MovieInfo.self, from: data)
+                self.movieInfo = try JSONDecoder().decode(MovieInfo.self, from: data)
                 DispatchQueue.main.async {
-                    self?.movieInfoTableView.reloadData()
+                    self.movieInfoTableView.reloadData()
                 }
             } catch {
                 print(error)
@@ -79,16 +78,18 @@ extension MovieInfoViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: Identifier.movieInfoCellIdentifier,
-                                                       for: indexPath) as? MovieInfoTableViewCell
-
-        else { return UITableViewCell() }
-        guard let model = movieInfo else { return UITableViewCell() }
+                                                       for: indexPath) as? MovieInfoTableViewCell,
+            let model = movieInfo
+        else {
+            return UITableViewCell()
+        }
         cell.refreshData(model)
         cell.delegate = self
         return cell
     }
 }
 
+/// ShowSafaryDelegate
 extension MovieInfoViewController: ShowSafaryDelegate {
     func showMovieInfo() {
         guard let model = movieInfo else { return }

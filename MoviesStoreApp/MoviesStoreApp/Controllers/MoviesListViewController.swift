@@ -2,8 +2,6 @@
 //  MoviesListViewController.swift
 //  MoviesStoreApp
 //
-//  Created by Александр Андреевич Щепелин on 24.10.2022.
-//
 
 import UIKit
 
@@ -13,8 +11,8 @@ final class MoviesListViewController: UIViewController {
 
     private let moviesListTableView = UITableView()
 
-    private var moviesCompilationSegmentControl: UISegmentedControl = {
-        let segmentControl = UISegmentedControl()
+    private let moviesCompilationSegmentControl: UISegmentedControl = {
+        let segmentControl = UISegmentedControl(items: URLRequest.moviesCompilation)
         return segmentControl
     }()
 
@@ -38,18 +36,18 @@ final class MoviesListViewController: UIViewController {
     @objc private func segmentControlAction(_ segmentedControl: UISegmentedControl) {
         switch segmentedControl.selectedSegmentIndex {
         case 0:
-            moviesCollection(url: URLRequest.baseURL + URLRequest.topRatedRequest + URLRequest.apiKey)
+            moviesCollection(url: "\(URLRequest.baseURL) \(URLRequest.topRatedRequest) \(URLRequest.apiKey)")
         case 1:
-            moviesCollection(url: URLRequest.baseURL + URLRequest.popularRequest + URLRequest.apiKey)
+            moviesCollection(url: "\(URLRequest.baseURL) \(URLRequest.popularRequest) \(URLRequest.apiKey)")
         case 2:
-            moviesCollection(url: URLRequest.baseURL + URLRequest.upcomingRequest + URLRequest.apiKey)
+            moviesCollection(url: "\(URLRequest.baseURL) \(URLRequest.upcomingRequest) \(URLRequest.apiKey)")
         default:
             break
         }
     }
 
     private func setupUI() {
-        moviesCollection(url: URLRequest.baseURL + URLRequest.popularRequest + URLRequest.apiKey)
+        moviesCollection(url: "\(URLRequest.baseURL) \(URLRequest.popularRequest) \(URLRequest.apiKey)")
         addSegmentControl()
         setupTableView()
         setupConstraints()
@@ -59,7 +57,6 @@ final class MoviesListViewController: UIViewController {
 
     private func addSegmentControl() {
         let segmentItems = URLRequest.moviesCompilation
-        moviesCompilationSegmentControl = UISegmentedControl(items: segmentItems)
         view.addSubview(moviesCompilationSegmentControl)
         moviesCompilationSegmentControl.translatesAutoresizingMaskIntoConstraints = false
         moviesCompilationSegmentControl.addTarget(self, action: #selector(segmentControlAction(_:)), for: .valueChanged)
@@ -93,12 +90,12 @@ final class MoviesListViewController: UIViewController {
 
     private func moviesCollection(url: String) {
         guard let url = URL(string: url) else { return }
-        session.dataTask(with: url) { [weak self] data, _, error in
+        session.dataTask(with: url) { data, _, error in
             guard let data = data else { return }
             do {
-                self?.movies = try JSONDecoder().decode(Results.self, from: data).results
+                self.movies = try JSONDecoder().decode(Results.self, from: data).movies
                 DispatchQueue.main.async {
-                    self?.moviesListTableView.reloadData()
+                    self.moviesListTableView.reloadData()
                 }
             } catch {
                 print(error)
